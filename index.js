@@ -95,6 +95,8 @@ function onFrameCallback (frameRaw, faceDetect) {
   // and we should call the onFaceDetected callback
   if (faceDetect && _.get('onFaceDetected', liveOpts)) {
     if (liveOpts.onFaceDetected(lastFrame) === false) {
+      _.get('verbose', liveOpts) && console.log('onFaceDetected returned false, closing camera')
+
       // onFaceDetected callback returned false
       // it means that we can close the camera
       return exports.closeCamera()
@@ -103,6 +105,8 @@ function onFrameCallback (frameRaw, faceDetect) {
 
   if (_.get('onFrame', liveOpts)) {
     if (liveOpts.onFrame(lastFrame) === false) {
+      _.get('verbose', liveOpts) && console.log('onFrame returned false, closing camera')
+
       // onFrame callback returned false
       // it means that we can close the camera
       return exports.closeCamera()
@@ -110,6 +114,8 @@ function onFrameCallback (frameRaw, faceDetect) {
   }
 
   if (_.get('singleShot', liveOpts)) {
+    _.get('verbose', liveOpts) && console.log('running with {singleShot: true}, closing camera')
+
     // fetch the frame
     // and close the camera
     return exports.closeCamera()

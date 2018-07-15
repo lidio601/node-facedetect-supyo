@@ -6,9 +6,10 @@ var fs = require('fs')
 camera.openCamera({
   // width: 320,
   // height: 240,
-  faceDetect: true,
-  // codec: '.jpg',
-  onFaceDetected: function () {
+  // faceDetect: true,
+  codec: '.jpg',
+  singleShot: true,
+  onFrame: function () {
     console.log('face detected')
     console.log('frame size', camera.getFrameSize())
 
