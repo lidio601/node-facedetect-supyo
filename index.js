@@ -8,7 +8,7 @@ var defaultOpts = {
   // width: 640,
   // height: 480,
   // input: '0',
-  codec: '.jpg',
+  // codec: '.jpg',
   // frameCallback: function (frameRaw, faceDetected) {},
   faceDetect: false,
   singleShot: false

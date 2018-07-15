@@ -5,8 +5,8 @@
 #ifndef CAMERA_WRAPPER_TYPES_H
 #define CAMERA_WRAPPER_TYPES_H
 
-//#define DEBUG_WINDOW
-//#define DEBUG_MESSAGE
+// #define DEBUG_WINDOW
+#define DEBUG_MESSAGE
 
 // Core
 #include <iostream>
@@ -41,6 +41,7 @@ using namespace v8;
 //Define functions in scope
 std::string stringValue(Local<Value> value);
 float getticks();
+std::vector<uchar> mat2vector(cv::Mat mat);
 
 /*
  * Thread message

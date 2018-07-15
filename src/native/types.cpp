@@ -58,3 +58,20 @@ float getticks()
 	return (float)( lint.QuadPart/freq );
 }
 #endif
+
+/**
+ * @see https://stackoverflow.com/questions/26681713/convert-mat-to-array-vector-in-opencv
+ */
+std::vector<uchar> mat2vector(cv::Mat mat) {
+	std::vector<uchar> array;
+
+	if (mat.isContinuous()) {
+		array.assign((uchar*)mat.datastart, (uchar*)mat.dataend);
+	} else {
+		for (int i = 0; i < mat.rows; ++i) {
+			array.insert(array.end(), mat.ptr<uchar>(i), mat.ptr<uchar>(i)+mat.cols);
+		}
+	}
+
+	return array;
+}

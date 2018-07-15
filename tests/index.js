@@ -2,6 +2,7 @@
 
 var camera = require('../')
 var test = require('tape')
+var fs = require('fs')
 
 test('closeCamera', function (t) {
   t.plan(1)
@@ -35,7 +36,9 @@ test('openCamera & closeCamera', function (t) {
 
   // openCamera should be true
   // as the camera was opened
-  var result = camera.openCamera()
+  var result = camera.openCamera({
+      codec: '.jpg'
+  })
   t.true(result)
 
   setTimeout(function () {
@@ -54,7 +57,8 @@ test('singleShot', function (t) {
   // openCamera should be true
   // as the camera was opened
   var result = camera.openCamera({
-    singleShot: true
+    singleShot: true,
+      codec: '.jpg'
   })
   t.true(result)
 
@@ -71,6 +75,7 @@ test('onFrame callback', function (t) {
   // openCamera should be true
   // as the camera was opened
   var result = camera.openCamera({
+    codec: '.jpg',
 
     // on the first frame
     // close the camera
@@ -95,6 +100,7 @@ test('onFaceDetected callback', function (t) {
   // openCamera should be true
   // as the camera was opened
   var result = camera.openCamera({
+    codec: '.jpg',
 
     // enable face detector
     faceDetect: true,
@@ -117,4 +123,22 @@ test('onFaceDetected callback', function (t) {
   })
 
   t.true(result)
+})
+
+test('save frame to file', function (t) {
+  // openCamera should be true
+  // as the camera was opened
+  var result = camera.openCamera({
+    singleShot: true,
+    codec: '.jpg'
+  })
+  t.true(result)
+
+  setTimeout(function () {
+    var frame = camera.getFrame()
+    console.log('frame size', camera.getFrameSize())
+    fs.writeFileSync('result.jpg', frame)
+
+    t.end()
+  }, 1000)
 })

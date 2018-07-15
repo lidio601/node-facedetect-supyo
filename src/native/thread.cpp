@@ -70,8 +70,8 @@ void updateAsync(uv_async_t* req, int status)
  */
 void cameraLoop(uv_work_t* req) {
     TMessage* message = (TMessage*) req->data;
-    cv::Mat tmp, grayFrame, rsz;
-    std::vector<cv::DetectionBasedTracker::ExtObject> faces;
+    cv::Mat tmp, rsz;
+    std::vector<cv::Mat> channels(3);
 
 #ifdef DEBUG_MESSAGE
     float t = getticks();
@@ -94,6 +94,8 @@ void cameraLoop(uv_work_t* req) {
             cv::resize(tmp, rsz, size);
             msg->frame = rsz;
 
+            tmp.release();
+            tmp = rsz;
         } else {
             msg->frame = tmp;
 
@@ -104,23 +106,24 @@ void cameraLoop(uv_work_t* req) {
 
         // Do face detect if needed
         if (message->faceDetect) {
-            cvtColor(msg->frame, grayFrame, cv::COLOR_BGR2GRAY);
-            msg->faceDetected = detect(grayFrame, 100, 5.0);
-            grayFrame.release();
+            // https://github.com/opencv/opencv/issues/4356
+            // Actually, YUV420 can be provide direct access to its grey-channel without any copying.
+            // https://it.wikipedia.org/wiki/YUV
+            split(tmp, channels);
+            msg->faceDetected = detect(/* greyFrame */ channels[0]);
         }
-
-        // TODO: Add image parameters here
 
         // Encode to jpg
-        std::vector<int> compression_parameters = std::vector<int>(2);
-        compression_parameters[0] = CV_IMWRITE_JPEG_QUALITY;
-        compression_parameters[1] = 85;
-        if (message->resize) {
-            cv::imencode(message->codec, rsz, msg->image, compression_parameters);
-        } else {
+        if (message->codec.size()) {
+            // TODO: Add image parameters here
+            std::vector<int> compression_parameters = std::vector<int>(2);
+            compression_parameters[0] = CV_IMWRITE_JPEG_QUALITY;
+            compression_parameters[1] = 85;
             cv::imencode(message->codec, tmp, msg->image, compression_parameters);
+            compression_parameters.clear();
+        } else {
+            msg->image = mat2vector(tmp);
         }
-        compression_parameters.clear();
 
 #ifdef DEBUG_WINDOW
         if (tmp.size().height > 0 && tmp.size().width > 0) {
@@ -142,7 +145,6 @@ void cameraLoop(uv_work_t* req) {
     printf("thread :: cameraLoop end after %f\n", 1000.0f * t);
 #endif
 
-    rsz.release();
     tmp.release();
 }
 
@@ -157,6 +159,7 @@ void cameraClose(uv_work_t* req, int status) {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     TMessage* message = (TMessage*) req->data;
+
     message->capture->release();
     delete message->capture;
     delete req;
