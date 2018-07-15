@@ -7,11 +7,9 @@
 
 /**
  * @param {cvFrame}  greyFrame - byte array of the greyscale image
- * @param {number}   minsize - face minimum size (in pixels) - suggested 128
- * @param {number}   cutoff - quality threshold (suggested 0.5)
  * @param {boolean}  verbose - print debug messages to stdout
  */
-bool detect(cv::Mat greyFrame, int32_t minsize, float cutoff) {
+bool detect(cv::Mat greyFrame) {
   // image width
   int32_t ncols = greyFrame.cols;
   // image height
@@ -68,7 +66,7 @@ bool detect(cv::Mat greyFrame, int32_t minsize, float cutoff) {
       orientation,
       pixels,
       nrows, ncols, width_step,
-      SCALEFACTOR, STRIDEFACTOR, minsize,
+      SCALEFACTOR, STRIDEFACTOR, MIN_SIZE,
       MIN(nrows, ncols));
 
 #ifdef DEBUG_MESSAGE
@@ -83,7 +81,7 @@ bool detect(cv::Mat greyFrame, int32_t minsize, float cutoff) {
 
   for (i = 0; i < ndetections; ++i) {
     // check the confidence threshold
-    if(rcsq[4*i+3] >= cutoff) {
+    if(rcsq[4*i+3] >= CUTOFF_THRES) {
 #ifdef DEBUG_MESSAGE
         printf("supyo :: face detected at (x=%d, y=%d, r=%d) confidence %f\n", (int)rcsq[4*i+0], (int)rcsq[4*i+1], (int)rcsq[4*i+2], rcsq[4*i+3]);
 #endif
@@ -93,7 +91,7 @@ bool detect(cv::Mat greyFrame, int32_t minsize, float cutoff) {
     }
 #ifdef DEBUG_MESSAGE
     else {
-      printf("supyo :: result confidence %f < threshold (%f)\n", rcsq[4*i+3], cutoff);
+      printf("supyo :: result confidence %f < threshold (%f)\n", rcsq[4*i+3], CUTOFF_THRES);
     }
 #endif
   }

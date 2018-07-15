@@ -16,12 +16,9 @@ void startCapture(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
 
-    if (bag != NULL) {
-        // already started
-        if (bag->started) {
-            args.GetReturnValue().Set(Boolean::New(isolate, FALSE));
-            return;
-        }
+    if (bag != NULL && bag->started) {
+        args.GetReturnValue().Set(Boolean::New(isolate, FALSE));
+        return;
     }
 
     // released in stopCapture
@@ -61,10 +58,10 @@ void startCapture(const FunctionCallbackInfo<Value>& args) {
         Local<String> val = params->Get(String::NewFromUtf8(isolate, "codec"))->ToString();
         bag->codec = stringValue(val);
     } else {
-        bag->codec = std::string(".jpg");
+        bag->codec = std::string("");
     }
 #ifdef DEBUG_MESSAGE
-    printf("camera :: opts { codec : %s }\n", bag->codec.c_str());
+        printf("camera :: opts { codec : %s }\n", bag->codec.c_str());
 #endif
 
     // accept opts { input : string }
@@ -133,7 +130,6 @@ void startCapture(const FunctionCallbackInfo<Value>& args) {
     cv::waitKey(10);
 #endif
 
-    // released in stopCapture
 #ifdef DEBUG_MESSAGE
     printf("camera :: starting thread\n");
 #endif
@@ -160,16 +156,7 @@ void stopCapture(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
 
-    if (bag == NULL) {
-        // already stopped
-        args.GetReturnValue().Set(Boolean::New(isolate, FALSE));
-        return;
-    }
-
-    if (!bag->started) {
-        // already stopped
-        delete bag;
-
+    if (bag == NULL || !bag->started) {
         args.GetReturnValue().Set(Boolean::New(isolate, FALSE));
         return;
     }
