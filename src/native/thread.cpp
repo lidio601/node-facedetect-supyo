@@ -91,6 +91,16 @@ void cameraLoop(uv_work_t* req) {
     printf("thread :: cameraLoop start\n");
 #endif
 
+    /**
+     * known problem.
+     * some sloppy webcam drivers return an empty 1st frame, warmup or something.
+     * just try to capture 1 frame, before you go into the idle loop
+     * @see https://stackoverflow.com/questions/21353974
+     */
+    if (message->capture->isOpened()) {
+        bag->capture->read(tmp);
+    }
+
     while(m_brk > 0 && message->capture->isOpened()) {
 
         AsyncMessage *msg = new AsyncMessage();
