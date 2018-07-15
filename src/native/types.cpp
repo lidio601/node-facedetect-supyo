@@ -8,6 +8,12 @@ uv_async_t async;
 TMessage *bag;
 int m_brk = 0;
 
+#ifdef DEBUG_TIMES
+float time2process;
+float time2frame;
+float time2face;
+#endif
+
 std::string stringValue(Local<Value> value) {
     if (!value->IsString()) {
         return "";

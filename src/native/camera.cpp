@@ -16,6 +16,11 @@ void startCapture(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
 
+#ifdef DEBUG_TIMES
+    time2frame = getticks();
+    time2face = getticks();
+#endif
+
     if (bag != NULL && bag->started) {
         args.GetReturnValue().Set(Boolean::New(isolate, FALSE));
         return;

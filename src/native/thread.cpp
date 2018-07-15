@@ -60,6 +60,19 @@ void updateAsync(uv_async_t* req, int status)
     Local<Function> callBack = Local<Function>::New(isolate, bag->callback);
     callBack->Call(isolate->GetCurrentContext()->Global(), 2, argv);
 
+#ifdef DEBUG_TIMES
+    if (time2frame > 0) { // log only the first time
+        time2frame = getticks() - time2frame;
+        printf("thread :: time to first frame %f\n", 1000.0f * time2frame);
+        time2frame = -1;
+    }
+    if (time2face > 0 && asyncMessage->faceDetected) { // log only the first time
+        time2face = getticks() - time2face;
+        printf("thread :: time to first face %f\n", 1000.0f * time2face);
+        time2face = -1;
+    }
+#endif
+
     delete asyncMessage;
 }
 
@@ -88,6 +101,10 @@ void cameraLoop(uv_work_t* req) {
 
         // Capture Frame From WebCam
         message->capture->read(tmp);
+
+#ifdef DEBUG_TIMES
+        time2process = getticks();
+#endif
 
         if (message->resize) {
             cv::Size size = cv::Size(message->width, message->height);
@@ -139,7 +156,13 @@ void cameraLoop(uv_work_t* req) {
         } else {
             delete msg;
         }
-    }
+
+#ifdef DEBUG_TIMES
+        time2process = getticks() - time2process;
+        printf("thread :: processing time %f\n", 1000.0f * time2process);
+#endif
+
+    } // end cycle
 #ifdef DEBUG_MESSAGE
     t = getticks() - t;
     printf("thread :: cameraLoop end after %f\n", 1000.0f * t);

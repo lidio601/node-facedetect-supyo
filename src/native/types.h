@@ -6,7 +6,8 @@
 #define CAMERA_WRAPPER_TYPES_H
 
 // #define DEBUG_WINDOW
-#define DEBUG_MESSAGE
+// #define DEBUG_MESSAGE
+// #define DEBUG_TIMES
 
 // Core
 #include <iostream>
@@ -96,5 +97,11 @@ struct AsyncMessage {
 extern int m_brk;
 extern uv_async_t async;
 extern TMessage *bag;
+
+#ifdef DEBUG_TIMES
+extern float time2process;
+extern float time2frame;
+extern float time2face;
+#endif
 
 #endif //CAMERA_WRAPPER_TYPES_H
