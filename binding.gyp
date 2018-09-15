@@ -15,6 +15,8 @@
                      "-lopencv_highgui",
                      "-lopencv_imgproc",
                      "-lopencv_video",
+                     "-lopencv_features2d",
+                     "-lopencv_objdetect",
                  ]
             },
             "cflags": [
