@@ -53,7 +53,7 @@ bool detect(cv::Mat greyFrame) {
     #include "pico/facefinder.ea"
   };
 
-  for (i = 1; i <= 4; i++) {
+  for (i = 0; i < 4; i++) {
     // `orientation` is a number between 0 and 1 that determines the counterclockwise
     // in-plane rotation of the cascade: 0.0f corresponds to 0 radians
     // and 1.0f corresponds to 2*pi radians
